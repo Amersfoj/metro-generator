@@ -17,7 +17,7 @@ Quick simple PHP script to generate a lot of blocks at intervals
 ```php
 // south
 $stepSize = 10;
-for($y = 0; $y < 10; $y++){
+for($y = 0; $y < 10; $y++) {
 	$ycoord = $y ? $y * $stepSize : null;
 	// Flip for negative (north)
 	$ycoord *=-1;
@@ -33,16 +33,29 @@ for($y = 0; $y < 10; $y++){
  */
 function fillBlocks($from, $block, $to = null){
 	$command = 'fill';
-	foreach($from as $f) {
-		// TODO print nothing if $f is zero
-		$command .= ' ~' . $f;
-	}
-	// if $to was empty, reuse $from to place one block
-	foreach($to ?? $from as $t) {
-		$command .= ' ~' . $t;
-	}
+	
+	// Add from coordinates
+	$command .= coords($from);
+	
+	// if $to was passed, use it, otherwise reuse $from to place one block
+	$command .= coords($to ?? $from);
+
+	// Add block (all blocks have this prefix)
 	$command .= ' minecraft:' . $block;
 	
 	return $command . PHP_EOL;
+}
+
+// Convert coordinates array into string
+function coords(array $coords) {
+	$coord = '';
+	foreach($coords as $c) {
+		$coord .= ' ~'; // Always start at user
+		// Skip zero
+		if ($c) {
+			$coord .= $c;
+		}
+	}
+	return $coord;
 }
 ```
