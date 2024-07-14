@@ -18,12 +18,31 @@ Quick simple PHP script to generate a lot of blocks at intervals
 // south
 $stepSize = 10;
 for($y = 0; $y < 10; $y++){
-	$ycoord = $y ? $y*$stepSize : null;
+	$ycoord = $y ? $y * $stepSize : null;
 	// Flip for negative (north)
 	$ycoord *=-1;
-	echo str_replace(search: "%s", replace: $ycoord, subject: "fill ~1 ~ ~%s ~1 ~ ~%s minecraft:redstone_torch"); // TODO replace with setblock
-	echo PHP_EOL;
-	echo str_replace(search: "%s", replace: $ycoord, subject: "fill ~ ~-100 ~%s ~ ~-1 ~%s minecraft:cut_sandstone");
-	echo PHP_EOL;
+	echo fillBlocks(from: [1, 0, $ycoord], block: "redstone_torch");
+	echo fillBlocks(from: [0, -100, $ycoord], to: [0, -1, $ycoord], block: "cut_sandstone");
+}
+
+/** Return a /fill command for blocks at coordinates
+ *
+ * @param $from - array coordinates start
+ * @param $block - Block name
+ * @param $to - array coordinates end (if emtpy, $from is used to just set)
+ */
+function fillBlocks($from, $block, $to = null){
+	$command = 'fill';
+	foreach($from as $f) {
+		// TODO print nothing if $f is zero
+		$command .= ' ~' . $f;
+	}
+	// if $to was empty, reuse $from to place one block
+	foreach($to ?? $from as $t) {
+		$command .= ' ~' . $t;
+	}
+	$command .= ' minecraft:' . $block;
+	
+	return $command . PHP_EOL;
 }
 ```
