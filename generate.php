@@ -1,18 +1,17 @@
 <?php
 $blocks = [
 	[
-		// Place this block on every 10th block until 100
+		'label' => "Place redstone torch on every 10th block until 100",
 		'from' => [1, 0, '100/10'],
 		'to' => null,
 		'block' => 'redstone_torch',
 	],
 	[
+		'label' => "Pillar deep into the ground every 10th block until 100",
 		'from' => [0, -100, '100/10'],
 		'to' => [0, -1, '100/10'],
 		'block' => 'cut_sandstone'
-
 	]
-
 ];
 // Run
 $generator = new Generate();
@@ -25,7 +24,6 @@ class Generate
 
 	public function run(array $blocks)
 	{
-
 		foreach ($blocks as $block) {
 			$this->fillBlocks(...$block);
 		}
@@ -44,9 +42,14 @@ class Generate
 	 */
 	protected function fillBlocks($from, $block, $to = null, $label = null)
 	{
+		if ($label) {
+			// Add newline and comment
+			$this->commands[] = PHP_EOL . "## " . $label;
+		}
 		// Split both coordinates into subcommands if required
 		foreach ($this->subCoords($from) as $subFrom) {
 			// Iterate same method again but with newly adjusted 
+			// Don't pass along Label to group interval commands under group label
 			$this->fillBlocks(from: $subFrom, block: $block, to: $to);
 		}
 		// TO coordinates should be combined with FROM coordinates into one
@@ -101,7 +104,7 @@ class Generate
 				$limit = $parts[0]; // Limit is before slash
 				$stepSize = $parts[1]; // Step size is after slash
 				if ($stepSize > $limit) {
-					throw new Exception("Invalid coordinates, stepsize `" . $stepSize . "` may not be larger than limit `" . $limit . "`, trying to create `" . $block . "`");
+					throw new Exception("Invalid coordinates, stepsize `" . $stepSize . "` may not be larger than limit `" . $limit . "`");
 				}
 				// TODO if $limit is negative, loop does not run
 				for ($i = 0; $i < $limit; $i += $stepSize) {
