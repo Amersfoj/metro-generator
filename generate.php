@@ -82,6 +82,10 @@ class Generate
 			throw new Exception("Invalid Coordinates!");
 		}
 		foreach ($coords as $c) {
+			// Validate interval before adding
+			if ($this->isInterval($c)) {
+				throw new Exception("Invalid Coordinates! Not properly converted: ".var_export($coords,true));
+			}
 			$coord .= ' ~'; // Always start at user
 			// Skip zero
 			if ($c) {
@@ -95,7 +99,7 @@ class Generate
 	{
 		$subCoords = [];
 		foreach ($coords as $pos => $intervalCoord) {
-			if (str_contains(haystack: $intervalCoord, needle: "/")) {
+			if ($this->isInterval($intervalCoord)) {
 				// This coordinate at $post contains a slash, divide into steps
 				// Create new $from and $to
 				$subFrom = $coords;
@@ -136,5 +140,10 @@ class Generate
 			}
 		}
 		return $subCoords;
+	}
+
+	protected function isInterval($coord)
+	{
+		return str_contains(haystack: $coord, needle: "/");
 	}
 }
