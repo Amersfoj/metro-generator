@@ -1,13 +1,13 @@
 <?php
 $blocks = [
 	[
-		// Place this block until 100
-		'from' => [1, 0, '100'],
+		// Place this block on every 10th block until 100
+		'from' => [1, 0, '100/10'],
 		'to' => null,
 		'block' => 'redstone_torch',
 	],
 	[
-		'from' => [0, -100, '100'],
+		'from' => [0, -100, '100/10'],
 		'to' => [0, -1, '100/10'],
 		'block' => 'cut_sandstone'
 
@@ -43,6 +43,35 @@ class Generate
 	 */
 	protected function fillBlocks($from, $block, $to = null)
 	{
+		// TODO do the same for $to
+		foreach ($from as $pos => $fr) {
+			if (str_contains(haystack: $fr, needle: "/")) {
+				// This coordinate at $post contains a slash, divide into steps
+				// Create new $from and $to
+				$froms = [];
+				$subFrom = $from;
+				$parts = explode("/", $fr);
+				$limit = $parts[0]; // Limit is before slash
+				$stepSize = $parts[1]; // Step size is after slash
+				if ($stepSize > $limit) {
+					throw new Exception("Invalid coordinates, stepsize `" . $stepSize . "` may not be larger than limit `" . $limit . "`, trying to create `" . $block . "`");
+				}
+				// TODO if $limit is negative, loop does not run
+				for ($i = 0; $i < $limit; $i += $stepSize) {
+					// Overwrite from coordinate with simple line here
+					$subFrom[$pos] = $i;
+					$froms[] = $subFrom;
+				}
+				// Then run each subfrom as its own command
+				foreach ($froms as $subFromArray) {
+					// Iterate same method again but with newly adjusted 
+					$this->fillBlocks(from: $subFromArray, block: $block, to: $to);
+				}
+
+			}
+		}
+
+		//var_dump("Second iteration with args: ", func_get_args());
 		$command = 'fill';
 
 		// Add FROM coordinates
