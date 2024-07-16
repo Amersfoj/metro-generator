@@ -13,4 +13,4 @@ Spawn a tunnel by calling the functions in chat:
 ````
 
 #### PHP code to generate at interval in a direction
-Run the accompanied PHP file `generate.php` to generate the contents for a custom file
+Run the accompanied PHP Generator to generate the contents for a custom file
