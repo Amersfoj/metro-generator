@@ -15,7 +15,12 @@
 
 // Configure South tunnel
 $blocks = [
-	// TODO glass tunnel base
+	[
+		'label' => "Glass tunnel base",
+		'from' => [-2, -1, 0],
+		'to' => [2, 3, 100],
+		'block' => 'glass hollow',
+	],
 	[
 		'label' => "Back wall arch",
 		'from' => [2, -1, 0],
@@ -25,7 +30,7 @@ $blocks = [
 	[
 		// Cut out middle of back wall
 		'from' => [-1, 0, 0],
-		'to' => [-1, 2, 0],
+		'to' => [1, 2, 0],
 		'block' => "air",
 	],
 	[
@@ -47,13 +52,13 @@ $blocks = [
 		'block' => 'powered_rail',
 	],
 	[
-		'label' => "Place redstone torch on every 10th block until 100",
+		'label' => "Place redstone torches on every 10th block until 100",
 		'from' => [1, 0, '100/10'], // Along positive Z = southwards
 		'to' => null, // Leave empty to copy FROM coords along interval
 		'block' => 'redstone_torch',
 	],
 	[
-		'label' => "Pillar deep into the ground every 10th block until 100",
+		'label' => "Pillars deep into the ground every 10th block until 100",
 		'from' => [0, -100, '100/10'],
 		'to' => [0, -1, '100/10'],
 		'block' => 'cut_sandstone'
@@ -77,7 +82,9 @@ class Generate
 
 		// Echo each command
 		array_walk($this->commands, function ($command) {
-			echo $command . PHP_EOL;
+			if ($command) {
+				echo $command . PHP_EOL;
+			}
 		});
 	}
 
