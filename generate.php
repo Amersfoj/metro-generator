@@ -145,7 +145,7 @@ class Generate
 								];
 							}
 						} else {
-							throw new Exception("Cannot combine FROM and TO interval coordinates! From: " . var_export($subFrom, true) . "; To: " . var_export($to, true));
+							throw new Exception("Cannot combine FROM and TO interval coordinates! From: " . $this->printCoords($subFrom) . "; To: " . $this->printCoords($toF));
 						}
 					} else {
 						$this->logCoords(coords: $subFrom, message: "Add these subcoords");
@@ -166,7 +166,7 @@ class Generate
 	{
 		if ($this->debug) {
 			if ($coords) {
-				echo "Log coordinates: [" . implode(array: $coords, separator: ", ") . "]; ";
+				echo "Log coordinates: " . $this->printCoords($coords) . "; ";
 
 			}
 			if ($message) {
@@ -174,5 +174,10 @@ class Generate
 			}
 			echo PHP_EOL;
 		}
+	}
+
+	protected function printCoords(array $coords)
+	{
+		return "[" . implode(array: $coords, separator: ", ") . "]";
 	}
 }
