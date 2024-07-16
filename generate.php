@@ -12,7 +12,30 @@
  * 				S
  * 
  */
+
+// Configure South tunnel
 $blocks = [
+	// TODO glass tunnel base
+	[
+		'label' => "Back wall arch",
+		'from' => [2, -1, 0],
+		'to' => [-2, 3, 0],
+		'block' => "cut_sandstone",
+	],
+	[
+		// Cut out middle of back wall
+		'from' => [-1, 0, 0],
+		'to' => [-1, 2, 0],
+		'block' => "air",
+	],
+	[
+		'label' => 'Stone floor',
+		'from' => [-2, -1, 0],
+		'to' => [2, -1, 100],
+		'block' => 'sandstone',
+	],
+	// TODO center beam
+	// TODO redstone rail
 	[
 		'label' => "Place redstone torch on every 10th block until 100",
 		'from' => [1, 0, '100/10'], // Along positive Z = southwards
