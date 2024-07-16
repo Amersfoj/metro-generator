@@ -1,6 +1,5 @@
 <?php
 /**
- * 
  * 				N
  * 				| -Z
  * 				|
@@ -10,57 +9,56 @@
  * 				|
  *				| +Z
  * 				S
- * 
  */
 
-// Configure North tunnel
+// Configure West tunnel
 $blocks = [
 	[
 		'label' => "Glass tunnel base",
-		'from' => [-2, -1, 0],
-		'to' => [2, 3, -100],
+		'from' => [0, -1, -2],
+		'to' => [-100, 3, 2],
 		'block' => 'glass hollow',
 	],
 	[
 		'label' => "Back wall arch",
-		'from' => [2, -1, 0],
-		'to' => [-2, 3, 0],
+		'from' => [0, -1, 2],
+		'to' => [0, 3, -2],
 		'block' => "cut_sandstone",
 	],
 	[
 		// Cut out middle of back wall
-		'from' => [-1, 0, 0],
-		'to' => [1, 2, 0],
+		'from' => [0, 0, -1],
+		'to' => [0, 2, 1],
 		'block' => "air",
 	],
 	[
 		'label' => 'Stone floor',
-		'from' => [-2, -1, 0],
-		'to' => [2, -1, -100],
+		'from' => [0, -1, -2],
+		'to' => [-100, -1, 2],
 		'block' => 'sandstone',
 	],
 	[
 		'label' => 'Center beam',
 		'from' => [0, -1, 0],
-		'to' => [0, -2, -100],
+		'to' => [-100, -2, 0],
 		'block' => 'cut_sandstone',
 	],
 	[
 		'label' => 'Redstone rail',
 		'from' => [0, 0, 0],
-		'to' => [0, 0, -100],
+		'to' => [-100, 0, 0],
 		'block' => 'powered_rail',
 	],
 	[
 		'label' => "Place redstone torches on every 10th block until 100",
-		'from' => [1, 0, '-100/10'], // Along positive Z = southwards
+		'from' => ['-100/10', 0, 1], // Along positive Z = southwards
 		'to' => null, // Leave empty to copy FROM coords along interval
 		'block' => 'redstone_torch',
 	],
 	[
 		'label' => "Pillars deep into the ground every 10th block until 100",
-		'from' => [0, -100, '-100/10'],
-		'to' => [0, -1, '-100/10'],
+		'from' => ['-100/10', -100, 0],
+		'to' => ['-100/10', -1, 0],
 		'block' => 'cut_sandstone'
 	],
 ];
@@ -187,7 +185,7 @@ class Generate
 					$this->logCoords(message: "Step " . $i . " until limit: " . $limit);
 					// Overwrite FROM coordinate with simple line here
 					$step = $i;
-					if ($negativeLimit){
+					if ($negativeLimit) {
 						$step *= -1;
 					}
 					$subFrom[$pos] = $step;
