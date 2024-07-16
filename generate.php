@@ -13,12 +13,12 @@
  * 
  */
 
-// Configure South tunnel
+// Configure North tunnel
 $blocks = [
 	[
 		'label' => "Glass tunnel base",
 		'from' => [-2, -1, 0],
-		'to' => [2, 3, 100],
+		'to' => [2, 3, -100],
 		'block' => 'glass hollow',
 	],
 	[
@@ -36,31 +36,31 @@ $blocks = [
 	[
 		'label' => 'Stone floor',
 		'from' => [-2, -1, 0],
-		'to' => [2, -1, 100],
+		'to' => [2, -1, -100],
 		'block' => 'sandstone',
 	],
 	[
 		'label' => 'Center beam',
 		'from' => [0, -1, 0],
-		'to' => [0, -2, 100],
+		'to' => [0, -2, -100],
 		'block' => 'cut_sandstone',
 	],
 	[
 		'label' => 'Redstone rail',
 		'from' => [0, 0, 0],
-		'to' => [0, 0, 100],
+		'to' => [0, 0, -100],
 		'block' => 'powered_rail',
 	],
 	[
 		'label' => "Place redstone torches on every 10th block until 100",
-		'from' => [1, 0, '100/10'], // Along positive Z = southwards
+		'from' => [1, 0, '-100/10'], // Along positive Z = southwards
 		'to' => null, // Leave empty to copy FROM coords along interval
 		'block' => 'redstone_torch',
 	],
 	[
 		'label' => "Pillars deep into the ground every 10th block until 100",
-		'from' => [0, -100, '100/10'],
-		'to' => [0, -1, '100/10'],
+		'from' => [0, -100, '-100/10'],
+		'to' => [0, -1, '-100/10'],
 		'block' => 'cut_sandstone'
 	],
 ];
@@ -201,7 +201,7 @@ class Generate
 							if ($to[$pos] == $intervalCoord) {
 								// Update TO coordinates as well
 								$subTo = $to;
-								$subTo[$pos] = $i;
+								$subTo[$pos] = $step;
 
 								// When TO must be updated, return special array
 								$subCoords[] = [
