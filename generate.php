@@ -1,9 +1,22 @@
 <?php
+/**
+ * 
+ * 				N
+ * 				| -Z
+ * 				|
+ *		-X		| 		+X
+ *    W ------- O ------- E
+ * 				|
+ * 				|
+ *				| +Z
+ * 				S
+ * 
+ */
 $blocks = [
 	[
 		'label' => "Place redstone torch on every 10th block until 100",
-		'from' => [1, 0, '100/10'],
-		'to' => null,
+		'from' => [1, 0, '100/10'], // Along positive Z = southwards
+		'to' => null, // Leave empty to copy FROM coords along interval
 		'block' => 'redstone_torch',
 	],
 	[
@@ -11,7 +24,7 @@ $blocks = [
 		'from' => [0, -100, '100/10'],
 		'to' => [0, -1, '100/10'],
 		'block' => 'cut_sandstone'
-	]
+	],
 ];
 // Run
 $generator = new Generate();
