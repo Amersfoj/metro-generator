@@ -47,32 +47,38 @@ class Generate
 			// Add newline and comment
 			$this->commands[] = PHP_EOL . "## " . $label;
 		}
-		// Split both coordinates into subcommands if required
-		foreach ($this->subCoords($from, $to) as $subFrom) {
-			// Iterate same method again but with newly adjusted subfrom
-			// When subcoord contains 'to', it was edited for interval
-			if (!empty($subFrom['to'])) {
-				// In this case, method returned special array with 'from' and 'to' keys separately
-				$this->fillBlocks(from: $subFrom['from'], block: $block, to: $subFrom['to']);
-			} else {
-				// Don't pass along Label to group interval commands under group label
-				$this->fillBlocks(from: $subFrom, block: $block, to: $to);
+		// Split both coordinates into subcommands if they are intervals
+		$subCoords = $this->subCoords($from, $to);
+		// If these were converted to intervals, run for only those
+		if ($subCoords) {
+			foreach ($subCoords as $subFrom) {
+				// Iterate same method again but with newly adjusted subfrom
+				// When subcoord contains 'to', it was edited for interval
+				if (!empty($subFrom['to'])) {
+					// In this case, method returned special array with 'from' and 'to' keys separately
+					$this->fillBlocks(from: $subFrom['from'], block: $block, to: $subFrom['to']);
+				} else {
+					// Don't pass along Label to group interval commands under group label
+					$this->fillBlocks(from: $subFrom, block: $block, to: $to);
+				}
 			}
+		} else {
+			// No intervals, add these
+
+			$command = 'fill';
+
+			// Add FROM coordinates
+			$command .= $this->coords($from);
+
+			// Add TO coordinates
+			// if $to was passed, use it, otherwise reuse $from to place one block
+			$command .= $this->coords($to ?? $from);
+
+			// Add block (all blocks have this prefix)
+			$command .= ' minecraft:' . $block;
+
+			$this->commands[] = $command;
 		}
-
-		$command = 'fill';
-
-		// Add FROM coordinates
-		$command .= $this->coords($from);
-
-		// Add TO coordinates
-		// if $to was passed, use it, otherwise reuse $from to place one block
-		$command .= $this->coords($to ?? $from);
-
-		// Add block (all blocks have this prefix)
-		$command .= ' minecraft:' . $block;
-
-		$this->commands[] = $command;
 	}
 
 	// Convert coordinates array into string
