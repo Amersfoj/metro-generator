@@ -20,6 +20,7 @@ $generator->run($blocks);
 
 class Generate
 {
+	protected bool $debug = true;
 	protected array $commands = [];
 
 	public function run(array $blocks)
@@ -84,7 +85,7 @@ class Generate
 		foreach ($coords as $c) {
 			// Validate interval before adding
 			if ($this->isInterval($c)) {
-				throw new Exception("Invalid Coordinates! Not properly converted: ".var_export($coords,true));
+				throw new Exception("Invalid Coordinates! Not properly converted: " . var_export($coords, true));
 			}
 			$coord .= ' ~'; // Always start at user
 			// Skip zero
@@ -100,6 +101,11 @@ class Generate
 		$subCoords = [];
 		foreach ($coords as $pos => $intervalCoord) {
 			if ($this->isInterval($intervalCoord)) {
+				/** $pos now indicates which axis (0=X, 1=Y, 2=Z) 
+				 * X = East (negative X = West)
+				 * Y = altitude
+				 * Z = south (negative Z = North)
+				 */
 				// This coordinate at $post contains a slash, divide into steps
 				// Create new $from and $to
 				$subFrom = $coords;
@@ -111,6 +117,7 @@ class Generate
 				}
 				// TODO if $limit is negative, loop does not run
 				for ($i = 0; $i < $limit; $i += $stepSize) {
+					$this->logCoords(message: "Step " . $i . " until limit: " . $limit);
 					// Overwrite FROM coordinate with simple line here
 					$subFrom[$pos] = $i;
 
@@ -134,6 +141,7 @@ class Generate
 							throw new Exception("Cannot combine FROM and TO interval coordinates! From: " . var_export($subFrom, true) . "; To: " . var_export($to, true));
 						}
 					} else {
+						$this->logCoords(coords: $subFrom, message: "Add these subcoords");
 						$subCoords[] = $subFrom;
 					}
 				}
@@ -145,5 +153,19 @@ class Generate
 	protected function isInterval($coord)
 	{
 		return str_contains(haystack: $coord, needle: "/");
+	}
+
+	protected function logCoords(array $coords = [], string $message = null)
+	{
+		if ($this->debug) {
+			if ($coords) {
+				echo "Log coordinates: [" . implode(array: $coords, separator: ", ") . "]; ";
+
+			}
+			if ($message) {
+				echo $message;
+			}
+			echo PHP_EOL;
+		}
 	}
 }
