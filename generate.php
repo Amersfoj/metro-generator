@@ -20,7 +20,7 @@ $generator->run($blocks);
 
 class Generate
 {
-	protected bool $debug = true;
+	protected bool $debug = false;
 	protected array $commands = [];
 
 	public function run(array $blocks)
