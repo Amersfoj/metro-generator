@@ -11,12 +11,12 @@
  * 				S
  */
 
-// Configure West tunnel
+// Configure East tunnel
 $blocks = [
 	[
 		'label' => "Glass tunnel base",
 		'from' => [0, -1, -2],
-		'to' => [-100, 3, 2],
+		'to' => [100, 3, 2],
 		'block' => 'glass hollow',
 	],
 	[
@@ -34,31 +34,31 @@ $blocks = [
 	[
 		'label' => 'Stone floor',
 		'from' => [0, -1, -2],
-		'to' => [-100, -1, 2],
+		'to' => [100, -1, 2],
 		'block' => 'sandstone',
 	],
 	[
 		'label' => 'Center beam',
 		'from' => [0, -1, 0],
-		'to' => [-100, -2, 0],
+		'to' => [100, -2, 0],
 		'block' => 'cut_sandstone',
 	],
 	[
 		'label' => 'Redstone rail',
 		'from' => [0, 0, 0],
-		'to' => [-100, 0, 0],
+		'to' => [100, 0, 0],
 		'block' => 'powered_rail',
 	],
 	[
 		'label' => "Place redstone torches on every 10th block until 100",
-		'from' => ['-100/10', 0, 1], // Along positive Z = southwards
+		'from' => ['100/10', 0, 1], // Along positive Z = southwards
 		'to' => null, // Leave empty to copy FROM coords along interval
 		'block' => 'redstone_torch',
 	],
 	[
 		'label' => "Pillars deep into the ground every 10th block until 100",
-		'from' => ['-100/10', -100, 0],
-		'to' => ['-100/10', -1, 0],
+		'from' => ['100/10', -100, 0],
+		'to' => ['100/10', -1, 0],
 		'block' => 'cut_sandstone'
 	],
 ];
