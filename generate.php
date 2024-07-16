@@ -34,8 +34,18 @@ $blocks = [
 		'to' => [2, -1, 100],
 		'block' => 'sandstone',
 	],
-	// TODO center beam
-	// TODO redstone rail
+	[
+		'label' => 'Center beam',
+		'from' => [0, -1, 0],
+		'to' => [0, -2, 100],
+		'block' => 'cut_sandstone',
+	],
+	[
+		'label' => 'Redstone rail',
+		'from' => [0, 0, 0],
+		'to' => [0, 0, 100],
+		'block' => 'powered_rail',
+	],
 	[
 		'label' => "Place redstone torch on every 10th block until 100",
 		'from' => [1, 0, '100/10'], // Along positive Z = southwards
