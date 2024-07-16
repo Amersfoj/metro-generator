@@ -172,14 +172,26 @@ class Generate
 				$parts = explode("/", $intervalCoord);
 				$limit = $parts[0]; // Limit is before slash
 				$stepSize = $parts[1]; // Step size is after slash
+				if ($stepSize < 0) {
+					throw new Exception("Invalid coordinates: Interval step size may not be negative! " . $this->printCoords($subFrom));
+				}
+				$negativeLimit = ($limit < 0);
+				if ($negativeLimit) {
+					// Revert Limit to postive to make the loop run
+					$limit *= -1;
+				}
 				if ($stepSize > $limit) {
 					throw new Exception("Invalid coordinates: stepsize `" . $stepSize . "` may not be larger than limit `" . $limit . "`");
 				}
-				// TODO if $limit is negative, loop does not run
 				for ($i = 0; $i < $limit; $i += $stepSize) {
 					$this->logCoords(message: "Step " . $i . " until limit: " . $limit);
 					// Overwrite FROM coordinate with simple line here
-					$subFrom[$pos] = $i;
+					$step = $i;
+					if ($negativeLimit){
+						$step *= -1;
+					}
+					$subFrom[$pos] = $step;
+
 
 					/** Combine FROM with TO intervals if applicable */
 					if ($to) {
