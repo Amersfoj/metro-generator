@@ -1,6 +1,5 @@
 <?php
 /**
- * 
  * 				N
  * 				| -Z
  * 				|
@@ -10,57 +9,56 @@
  * 				|
  *				| +Z
  * 				S
- * 
  */
 
-// Configure South tunnel
+// Configure East tunnel
 $blocks = [
 	[
 		'label' => "Glass tunnel base",
-		'from' => [-2, -1, 0],
-		'to' => [2, 3, 100],
+		'from' => [0, -1, -2],
+		'to' => [100, 3, 2],
 		'block' => 'glass hollow',
 	],
 	[
 		'label' => "Back wall arch",
-		'from' => [2, -1, 0],
-		'to' => [-2, 3, 0],
+		'from' => [0, -1, 2],
+		'to' => [0, 3, -2],
 		'block' => "cut_sandstone",
 	],
 	[
 		// Cut out middle of back wall
-		'from' => [-1, 0, 0],
-		'to' => [1, 2, 0],
+		'from' => [0, 0, -1],
+		'to' => [0, 2, 1],
 		'block' => "air",
 	],
 	[
 		'label' => 'Stone floor',
-		'from' => [-2, -1, 0],
-		'to' => [2, -1, 100],
+		'from' => [0, -1, -2],
+		'to' => [100, -1, 2],
 		'block' => 'sandstone',
 	],
 	[
 		'label' => 'Center beam',
 		'from' => [0, -1, 0],
-		'to' => [0, -2, 100],
+		'to' => [100, -2, 0],
 		'block' => 'cut_sandstone',
 	],
 	[
 		'label' => 'Redstone rail',
 		'from' => [0, 0, 0],
-		'to' => [0, 0, 100],
+		'to' => [100, 0, 0],
 		'block' => 'powered_rail',
 	],
 	[
 		'label' => "Place redstone torches on every 10th block until 100",
-		'from' => [1, 0, '100/10'], // Along positive Z = southwards
+		'from' => ['100/10', 0, 1], // Along positive Z = southwards
 		'to' => null, // Leave empty to copy FROM coords along interval
 		'block' => 'redstone_torch',
 	],
 	[
 		'label' => "Pillars deep into the ground every 10th block until 100",
-		'from' => [0, -100, '100/10'],
-		'to' => [0, -1, '100/10'],
+		'from' => ['100/10', -100, 0],
+		'to' => ['100/10', -1, 0],
 		'block' => 'cut_sandstone'
 	],
 ];
@@ -172,14 +170,26 @@ class Generate
 				$parts = explode("/", $intervalCoord);
 				$limit = $parts[0]; // Limit is before slash
 				$stepSize = $parts[1]; // Step size is after slash
+				if ($stepSize < 0) {
+					throw new Exception("Invalid coordinates: Interval step size may not be negative! " . $this->printCoords($subFrom));
+				}
+				$negativeLimit = ($limit < 0);
+				if ($negativeLimit) {
+					// Revert Limit to postive to make the loop run
+					$limit *= -1;
+				}
 				if ($stepSize > $limit) {
 					throw new Exception("Invalid coordinates: stepsize `" . $stepSize . "` may not be larger than limit `" . $limit . "`");
 				}
-				// TODO if $limit is negative, loop does not run
 				for ($i = 0; $i < $limit; $i += $stepSize) {
 					$this->logCoords(message: "Step " . $i . " until limit: " . $limit);
 					// Overwrite FROM coordinate with simple line here
-					$subFrom[$pos] = $i;
+					$step = $i;
+					if ($negativeLimit) {
+						$step *= -1;
+					}
+					$subFrom[$pos] = $step;
+
 
 					/** Combine FROM with TO intervals if applicable */
 					if ($to) {
@@ -189,7 +199,7 @@ class Generate
 							if ($to[$pos] == $intervalCoord) {
 								// Update TO coordinates as well
 								$subTo = $to;
-								$subTo[$pos] = $i;
+								$subTo[$pos] = $step;
 
 								// When TO must be updated, return special array
 								$subCoords[] = [
