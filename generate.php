@@ -10,6 +10,8 @@
  *				| +Z
  * 				S
  */
+$floor = 'sandstone';
+$support = 'cut_sandstone';
 
 // Configure East tunnel
 $blocks = [
@@ -23,7 +25,7 @@ $blocks = [
 		'label' => "Back wall arch",
 		'from' => [0, -1, 2],
 		'to' => [0, 3, -2],
-		'block' => "cut_sandstone",
+		'block' => $support
 	],
 	[
 		// Cut out middle of back wall
@@ -35,13 +37,13 @@ $blocks = [
 		'label' => 'Stone floor',
 		'from' => [0, -1, -2],
 		'to' => [100, -1, 2],
-		'block' => 'sandstone',
+		'block' => $floor,
 	],
 	[
 		'label' => 'Center beam',
 		'from' => [0, -1, 0],
 		'to' => [100, -2, 0],
-		'block' => 'cut_sandstone',
+		'block' => $floor,
 	],
 	[
 		'label' => 'Redstone rail',
@@ -59,7 +61,7 @@ $blocks = [
 		'label' => "Pillars deep into the ground every 10th block until 100",
 		'from' => ['100/10', -100, 0],
 		'to' => ['100/10', -1, 0],
-		'block' => 'cut_sandstone'
+		'block' => $support
 	],
 ];
 // Run
