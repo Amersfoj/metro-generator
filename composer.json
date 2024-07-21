@@ -1,0 +1,13 @@
+{
+    "name": "amosoft/metro-generator",
+    "description": "Simplify generating Minecraft datapack functions!",
+    "type": "project",
+    "license": "LGPL-3.0",
+    "autoload": {
+        "psr-4": {
+            "Amosoft\\MetroGenerator\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {}
+}
