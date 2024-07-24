@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DatapackResource\Pages;
-use App\Filament\Resources\DatapackResource\RelationManagers;
-use App\Models\Datapack;
+use App\Filament\Resources\FuncResource\Pages;
+use App\Filament\Resources\FuncResource\RelationManagers;
+use App\Models\Func;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class DatapackResource extends Resource
+class FuncResource extends Resource
 {
-    protected static ?string $model = Datapack::class;
+    protected static ?string $model = Func::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -29,6 +29,9 @@ class DatapackResource extends Resource
                 Forms\Components\TextInput::make('description')
                     ->required()
                     ->maxLength(512),
+                Forms\Components\TextInput::make('pack_id')
+                    ->required()
+                    ->numeric(),
             ]);
     }
 
@@ -48,6 +51,9 @@ class DatapackResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('pack_id')
+                    ->numeric()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -72,9 +78,9 @@ class DatapackResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDatapacks::route('/'),
-            'create' => Pages\CreateDatapack::route('/create'),
-            'edit' => Pages\EditDatapack::route('/{record}/edit'),
+            'index' => Pages\ListFuncs::route('/'),
+            'create' => Pages\CreateFunc::route('/create'),
+            'edit' => Pages\EditFunc::route('/{record}/edit'),
         ];
     }
 }
