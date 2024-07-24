@@ -1,248 +1,246 @@
 <?php
 /**
- * 				N
- * 				| -Z
- * 				|
- *		-X		| 		+X
- *    W ------- O ------- E
- * 				|
- * 				|
- *				| +Z
- * 				S
+ *.............N
+ *.............|(-Z)
+ *.............|
+ *...(-X)......|.......(+X)
+ *....W--------O--------E
+ *.............|
+ *.............|
+ *.............|(+Z)
+ *.............S
  */
 $floor = 'sandstone';
 $support = 'cut_sandstone';
 
 // Configure East tunnel
 $blocks = [
-	[
-		'label' => "Glass tunnel base",
-		'from' => [0, -1, -2],
-		'to' => [100, 3, 2],
-		'block' => 'glass hollow',
-	],
-	[
-		'label' => "Back wall arch",
-		'from' => [0, -1, 2],
-		'to' => [0, 3, -2],
-		'block' => $support
-	],
-	[
-		// Cut out middle of back wall
-		'from' => [0, 0, -1],
-		'to' => [0, 2, 1],
-		'block' => "air",
-	],
-	[
-		'label' => 'Stone floor',
-		'from' => [0, -1, -2],
-		'to' => [100, -1, 2],
-		'block' => $floor,
-	],
-	[
-		'label' => 'Center beam',
-		'from' => [0, -1, 0],
-		'to' => [100, -2, 0],
-		'block' => $floor,
-	],
-	[
-		'label' => 'Redstone rail',
-		'from' => [0, 0, 0],
-		'to' => [100, 0, 0],
-		'block' => 'powered_rail',
-	],
-	[
-		'label' => "Place redstone torches on every 10th block until 100",
-		'from' => ['100/10', 0, 1], // Along positive Z = southwards
-		'to' => null, // Leave empty to copy FROM coords along interval
-		'block' => 'redstone_torch',
-	],
-	[
-		'label' => "Pillars deep into the ground every 10th block until 100",
-		'from' => ['100/10', -100, 0],
-		'to' => ['100/10', -1, 0],
-		'block' => $support
-	],
+    [
+        'name' => "Glass tunnel base",
+        'from' => [0, -1, -2],
+        'to' => [100, 3, 2],
+        'block' => 'glass hollow',
+    ],
+    [
+        'name' => "Back wall arch",
+        'from' => [0, -1, 2],
+        'to' => [0, 3, -2],
+        'block' => $support
+    ],
+    [
+        // Cut out middle of back wall
+        'from' => [0, 0, -1],
+        'to' => [0, 2, 1],
+        'block' => "air",
+    ],
+    [
+        'name' => 'Stone floor',
+        'from' => [0, -1, -2],
+        'to' => [100, -1, 2],
+        'block' => $floor,
+    ],
+    [
+        'name' => 'Center beam',
+        'from' => [0, -1, 0],
+        'to' => [100, -2, 0],
+        'block' => $floor,
+    ],
+    [
+        'name' => 'Redstone rail',
+        'from' => [0, 0, 0],
+        'to' => [100, 0, 0],
+        'block' => 'powered_rail',
+    ],
+    [
+        'name' => "Place redstone torches on every 10th block until 100",
+        'from' => ['100/10', 0, 1], // Along positive Z = southwards
+        'to' => null, // Leave empty to copy FROM coords along interval
+        'block' => 'redstone_torch',
+    ],
+    [
+        'name' => "Pillars deep into the ground every 10th block until 100",
+        'from' => ['100/10', -100, 0],
+        'to' => ['100/10', -1, 0],
+        'block' => $support
+    ],
 ];
 // Run
 $generator = new Generate();
 $generator->run($blocks);
 
-
 class Generate
 {
-	protected bool $debug = false;
-	protected array $commands = [];
+    protected bool $debug = false;
 
-	public function run(array $blocks)
-	{
-		foreach ($blocks as $block) {
-			$this->fillBlocks(...$block);
-		}
+    protected array $commands = [];
 
-		// Echo each command
-		array_walk($this->commands, function ($command) {
-			if ($command) {
-				echo $command . PHP_EOL;
-			}
-		});
-	}
+    public function run(array $blocks)
+    {
+        foreach ($blocks as $block) {
+            $this->fillBlocks(...$block);
+        }
 
-	/** Return a /fill command for blocks at coordinates
-	 *
-	 * @param $from - array coordinates start
-	 * @param $block - Block name
-	 * @param $to - array coordinates end (if emtpy, $from is used to just set)
-	 */
-	protected function fillBlocks($from, $block, $to = null, $label = null)
-	{
-		if ($label) {
-			// Add newline and comment
-			$this->commands[] = PHP_EOL . "## " . $label;
-			$this->logCoords(message: "[" . $label . "]:");
-		}
-		// Split both coordinates into subcommands if they are intervals
-		$subCoords = $this->subCoords($from, $to);
-		// If these were converted to intervals, run for only those
-		if ($subCoords) {
-			foreach ($subCoords as $subFrom) {
-				// Iterate same method again but with newly adjusted subfrom
-				$this->fillBlocks(
-					// Subcoords might return special array with 'from' and 'to' separated
-					from: $subFrom['from'] ?? $subFrom,
-					block: $block,
-					// When subcoord contains 'to', it was edited for interval
-					to: $subFrom['to'] ?? $to,
-					// Don't pass along Label to group interval commands under group label
-				);
-			}
-		} else {
-			// No intervals, add these
+        // Echo each command
+        array_walk($this->commands, function ($command) {
+            if ($command) {
+                echo $command . PHP_EOL;
+            }
+        });
+    }
 
-			$command = 'fill';
+    /** Return a /fill command for blocks at coordinates
+     *
+     * @param $from - array coordinates start
+     * @param $block - Block name
+     * @param $to - array coordinates end (if emtpy, $from is used to just set)
+     */
+    protected function fillBlocks($from, $block, $to = null, $name = null)
+    {
+        if ($name) {
+            // Add newline and comment
+            $this->commands[] = PHP_EOL . "## " . $name;
+            $this->logCoords(message: "[" . $name . "]:");
+        }
+        // Split both coordinates into subcommands if they are intervals
+        $subCoords = $this->subCoords($from, $to);
+        // If these were converted to intervals, run for only those
+        if ($subCoords) {
+            foreach ($subCoords as $subFrom) {
+                // Iterate same method again but with newly adjusted subfrom
+                $this->fillBlocks(
+                // Subcoords might return special array with 'from' and 'to' separated
+                    from: $subFrom['from'] ?? $subFrom,
+                    block: $block,
+                    // When subcoord contains 'to', it was edited for interval
+                    to: $subFrom['to'] ?? $to,
+                // Don't pass along Name to group interval commands under group Name
+                );
+            }
+        } else {
+            // No intervals, add these
 
-			// Add FROM coordinates
-			$command .= $this->coords($from);
+            $command = 'fill';
 
-			// Add TO coordinates
-			// if $to was passed, use it, otherwise reuse $from to place one block
-			$command .= $this->coords($to ?? $from);
+            // Add FROM coordinates
+            $command .= $this->coords($from);
 
-			// Add block (all blocks have this prefix)
-			$command .= ' minecraft:' . $block;
+            // Add TO coordinates
+            // if $to was passed, use it, otherwise reuse $from to place one block
+            $command .= $this->coords($to ?? $from);
 
-			$this->commands[] = $command;
-		}
-	}
+            // Add block (all blocks have this prefix)
+            $command .= ' minecraft:' . $block;
 
-	// Convert coordinates array into string
-	protected function coords(array $coords)
-	{
-		$coord = '';
-		if (sizeof($coords) < 3) {
-			throw new Exception("Invalid Coordinates!");
-		}
-		foreach ($coords as $c) {
-			// Validate interval before adding
-			if ($this->isInterval($c)) {
-				throw new Exception("Invalid Coordinates! Not properly converted: " . var_export($coords, true));
-			}
-			$coord .= ' ~'; // Always start at user
-			// Skip zero
-			if ($c) {
-				$coord .= $c;
-			}
-		}
-		return $coord;
-	}
+            $this->commands[] = $command;
+        }
+    }
 
-	protected function subCoords(array $coords, ?array $to = null)
-	{
-		$subCoords = [];
-		foreach ($coords as $pos => $intervalCoord) {
-			if ($this->isInterval($intervalCoord)) {
-				/** $pos now indicates which axis (0=X, 1=Y, 2=Z) 
-				 * X = East (negative X = West)
-				 * Y = altitude
-				 * Z = south (negative Z = North)
-				 */
-				// This coordinate at $post contains a slash, divide into steps
-				// Create new $from and $to
-				$subFrom = $coords;
-				$parts = explode("/", $intervalCoord);
-				$limit = $parts[0]; // Limit is before slash
-				$stepSize = $parts[1]; // Step size is after slash
-				if ($stepSize < 0) {
-					throw new Exception("Invalid coordinates: Interval step size may not be negative! " . $this->printCoords($subFrom));
-				}
-				$negativeLimit = ($limit < 0);
-				if ($negativeLimit) {
-					// Revert Limit to postive to make the loop run
-					$limit *= -1;
-				}
-				if ($stepSize > $limit) {
-					throw new Exception("Invalid coordinates: stepsize `" . $stepSize . "` may not be larger than limit `" . $limit . "`");
-				}
-				for ($i = 0; $i < $limit; $i += $stepSize) {
-					$this->logCoords(message: "Step " . $i . " until limit: " . $limit);
-					// Overwrite FROM coordinate with simple line here
-					$step = $i;
-					if ($negativeLimit) {
-						$step *= -1;
-					}
-					$subFrom[$pos] = $step;
+    // Convert coordinates array into string
+    protected function coords(array $coords)
+    {
+        $coord = '';
+        if (sizeof($coords) < 3) {
+            throw new Exception("Invalid Coordinates!");
+        }
+        foreach ($coords as $c) {
+            // Validate interval before adding
+            if ($this->isInterval($c)) {
+                throw new Exception("Invalid Coordinates! Not properly converted: " . var_export($coords, true));
+            }
+            $coord .= ' ~'; // Always start at user
+            // Skip zero
+            if ($c) {
+                $coord .= $c;
+            }
+        }
+        return $coord;
+    }
 
+    protected function subCoords(array $coords, ?array $to = null)
+    {
+        $subCoords = [];
+        foreach ($coords as $pos => $intervalCoord) {
+            if ($this->isInterval($intervalCoord)) {
+                /** $pos now indicates which axis (0=X, 1=Y, 2=Z)
+                 * X = East (negative X = West)
+                 * Y = altitude
+                 * Z = south (negative Z = North)
+                 */
+                // This coordinate at $post contains a slash, divide into steps
+                // Create new $from and $to
+                $subFrom = $coords;
+                $parts = explode("/", $intervalCoord);
+                $limit = $parts[0]; // Limit is before slash
+                $stepSize = $parts[1]; // Step size is after slash
+                if ($stepSize < 0) {
+                    throw new Exception("Invalid coordinates: Interval step size may not be negative! " . $this->printCoords($subFrom));
+                }
+                $negativeLimit = ($limit < 0);
+                if ($negativeLimit) {
+                    // Revert Limit to postive to make the loop run
+                    $limit *= -1;
+                }
+                if ($stepSize > $limit) {
+                    throw new Exception("Invalid coordinates: stepsize `" . $stepSize . "` may not be larger than limit `" . $limit . "`");
+                }
+                for ($i = 0; $i < $limit; $i += $stepSize) {
+                    $this->logCoords(message: "Step " . $i . " until limit: " . $limit);
+                    // Overwrite FROM coordinate with simple line here
+                    $step = $i;
+                    if ($negativeLimit) {
+                        $step *= -1;
+                    }
+                    $subFrom[$pos] = $step;
 
-					/** Combine FROM with TO intervals if applicable */
-					if ($to) {
-						// And TO has interval
-						if (str_contains(haystack: $to[$pos], needle: "/")) {
-							// And TO has the same interval at the same position
-							if ($to[$pos] == $intervalCoord) {
-								// Update TO coordinates as well
-								$subTo = $to;
-								$subTo[$pos] = $step;
+                    /** Combine FROM with TO intervals if applicable */
+                    if ($to) {
+                        // And TO has interval
+                        if (str_contains(haystack: $to[$pos], needle: "/")) {
+                            // And TO has the same interval at the same position
+                            if ($to[$pos] == $intervalCoord) {
+                                // Update TO coordinates as well
+                                $subTo = $to;
+                                $subTo[$pos] = $step;
 
-								// When TO must be updated, return special array
-								$subCoords[] = [
-									'from' => $subFrom,
-									'to' => $subTo,
-								];
-							}
-						} else {
-							throw new Exception("Cannot combine FROM and TO interval coordinates! From: " . $this->printCoords($subFrom) . "; To: " . $this->printCoords($toF));
-						}
-					} else {
-						$this->logCoords(coords: $subFrom, message: "Add these subcoords");
-						$subCoords[] = $subFrom;
-					}
-				}
-			}
-		}
-		return $subCoords;
-	}
+                                // When TO must be updated, return special array
+                                $subCoords[] = [
+                                    'from' => $subFrom,
+                                    'to' => $subTo,
+                                ];
+                            }
+                        } else {
+                            throw new Exception("Cannot combine FROM and TO interval coordinates! From: " . $this->printCoords($subFrom) . "; To: " . $this->printCoords($toF));
+                        }
+                    } else {
+                        $this->logCoords(coords: $subFrom, message: "Add these subcoords");
+                        $subCoords[] = $subFrom;
+                    }
+                }
+            }
+        }
+        return $subCoords;
+    }
 
-	protected function isInterval($coord)
-	{
-		return str_contains(haystack: $coord, needle: "/");
-	}
+    protected function isInterval($coord)
+    {
+        return str_contains(haystack: $coord, needle: "/");
+    }
 
-	protected function logCoords(array $coords = [], string $message = null)
-	{
-		if ($this->debug) {
-			if ($coords) {
-				echo "Log coordinates: " . $this->printCoords($coords) . "; ";
+    protected function logCoords(array $coords = [], string $message = null)
+    {
+        if ($this->debug) {
+            if ($coords) {
+                echo "Log coordinates: " . $this->printCoords($coords) . "; ";
+            }
+            if ($message) {
+                echo $message;
+            }
+            echo PHP_EOL;
+        }
+    }
 
-			}
-			if ($message) {
-				echo $message;
-			}
-			echo PHP_EOL;
-		}
-	}
-
-	protected function printCoords(array $coords)
-	{
-		return "[" . implode(array: $coords, separator: ", ") . "]";
-	}
+    protected function printCoords(array $coords)
+    {
+        return "[" . implode(array: $coords, separator: ", ") . "]";
+    }
 }
