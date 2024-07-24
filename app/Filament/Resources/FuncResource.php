@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\FuncResource\Pages;
 use App\Filament\Resources\FuncResource\RelationManagers;
+use App\Models\Datapack;
 use App\Models\Func;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -27,9 +28,11 @@ class FuncResource extends Resource
                 Forms\Components\TextInput::make('description')
                     ->required()
                     ->maxLength(512),
-                Forms\Components\TextInput::make('pack_id')
+                Forms\Components\Select::make('pack_id')
                     ->required()
-                    ->numeric(),
+                    ->label("Pack")
+                    ->options(Datapack::all()->pluck('name', 'id'))
+                    ->searchable()
             ]);
     }
 

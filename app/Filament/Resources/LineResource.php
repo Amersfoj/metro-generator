@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LineResource\Pages;
 use App\Filament\Resources\LineResource\RelationManagers;
+use App\Models\Func;
 use App\Models\Line;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -33,9 +34,12 @@ class LineResource extends Resource
                 Forms\Components\TextInput::make('block')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('func_id')
+                Forms\Components\Select::make('func_id')
                     ->required()
-                    ->numeric(),
+                    ->label("Func")
+                    ->options(Func::all()->pluck('name', 'id'))
+                    // TODO default most recently edited
+                    ->searchable()
             ]);
     }
 
